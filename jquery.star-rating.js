@@ -1,16 +1,17 @@
 (function ($) {
     $.fn.starRating = function (setup) {
         let settings = $.extend(true, {
-            wrapperClasses: 'p-5 shadow',
+            wrapperClasses: '',
             starIconEmpty: 'far fa-star',
             starIconFull: 'fas fa-star',
             starColorEmpty: 'lightgray',
             starColorFull: '#FFC107',
-            starsSize: 4, // em
+            starsSize: 1.5, // em
             stars: 5,
-            showInfo: true,
+            showInfo: false,
             titles: ["Sehr schlecht", "Schlecht", "Mittel", "Gut", "Sehr gut!"],
-            inputName: 'rating'
+            inputName: 'rating',
+            baseRating: 0
         }, setup || {});
 
         $(this).each(function (i, e) {
@@ -32,28 +33,33 @@
             if (!wrapper.hasClass('js-wc-star-rating')) {
 
                 let starWrapper = $('<div>', {
-                    css: {'display': 'flex', 'flex-wrap': 'nowrap'}
+                    css: {}
                 }).appendTo(wrapper);
 
                 for (let i = 1; i <= settings.stars; i++) {
+
+                    var inputChecked = (i <= settings.baseRating ? 'checked' : '');
                     $('<input>', {
                         type: 'radio',
                         value: i,
                         name: settings.inputName,
+                        checked: inputChecked,
                         css: {
                             display: 'none'
                         }
                     }).appendTo(starWrapper);
 
+                    var starColor = i <= settings.baseRating ? settings.starColorFull : settings.starColorEmpty;
+                    var starIcon = i <= settings.baseRating ? settings.starIconFull : settings.starIconEmpty;
                     $('<i>', {
                         'data-index': i - 1,
                         title: settings.titles[i - 1] || i + " Sterne",
                         css: {
-                            color: settings.starColorEmpty,
+                            color: starColor,
                             margin: '2px',
                             fontSize: settings.starsSize + 'em'
                         },
-                        class: settings.starIconEmpty
+                        class: starIcon
                     }).appendTo(starWrapper);
 
                 }
@@ -79,10 +85,6 @@
                     }).insertBefore(starWrapper);
                 }
                 wrapper.css({
-                    'display': 'flex',
-                    'flex-direction': 'column',
-                    'justify-content': 'center',
-                    'align-items': 'center'
                 })
                 wrapper.addClass('js-wc-star-rating');
                 events(wrapper);
